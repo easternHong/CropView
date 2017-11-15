@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.hds.crop.MainActivity">
+
+    <com.hds.crop.CropLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/pic1">
+
+        <com.hds.crop.EffectLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="100dp"
+            android:minWidth="100dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="美丽的设计师说 这个效果 string/hello_world"
+                android:textColor="@color/colorPrimary" />
+        </com.hds.crop.EffectLayout>
+    </com.hds.crop.CropLayout>
+</android.support.constraint.ConstraintLayout>

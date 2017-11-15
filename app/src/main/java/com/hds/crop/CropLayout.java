@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -236,6 +237,7 @@ public class CropLayout extends FrameLayout {
             LayoutParams lp = (LayoutParams) getChildView().getLayoutParams();
             lp.width = w;
             lp.height = h;
+            lp.gravity = Gravity.NO_GRAVITY;
             lp.setMargins(l, t, 0, 0);
             getChildView().layout(l, t, r, b);
             getChildView().requestLayout();

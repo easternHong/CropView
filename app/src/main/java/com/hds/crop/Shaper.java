@@ -7,12 +7,13 @@ import android.view.View;
  * Created by hds on 17-11-15.
  */
 
-public interface Shapper {
+public interface Shaper {
 
 
-    View getShapper();
+    View getShaper();
 
     RectF getCornerRects();
 
+    int getId();
 
 }

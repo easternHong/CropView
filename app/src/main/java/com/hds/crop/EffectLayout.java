@@ -16,7 +16,7 @@ import android.widget.FrameLayout;
  * Created by hds on 17-11-15.
  */
 
-public class EffectLayout extends FrameLayout implements Shapper {
+public class EffectLayout extends FrameLayout implements Shaper {
 
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -89,7 +89,7 @@ public class EffectLayout extends FrameLayout implements Shapper {
 //    }
 
     @Override
-    public View getShapper() {
+    public View getShaper() {
         return this;
     }
 

@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 /**
@@ -20,13 +21,13 @@ import android.widget.FrameLayout;
 public class CropLayout extends FrameLayout {
     private static final String TAG = "CropLayout";
 
-
+    private int l = 0, t = 0, r = 0, b = 0;
     private int mTouchSlop;
     private int currentCorner = -1;
     private float preTouchX = -1;
     private boolean canBeExpand = false;
 
-    private Shapper shapper;
+    private Shaper shapper;
     private ViewDragHelper dragHelper;
 
     public CropLayout(@NonNull Context context) {
@@ -47,7 +48,7 @@ public class CropLayout extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        shapper = (Shapper) getChildAt(0);
+        shapper = (Shaper) getChildAt(0);
     }
 
     private void init() {
@@ -58,19 +59,21 @@ public class CropLayout extends FrameLayout {
 
             @Override
             public boolean tryCaptureView(View child, int pointerId) {
-                return child == getChildView();
+                shapper = (Shaper) child;
+                return true;
             }
 
             @Override
             public void onViewReleased(View releasedChild, float xvel, float yvel) {
                 super.onViewReleased(releasedChild, xvel, yvel);
-//                Log.d(TAG, "cancel");
+                LayoutParams lp = (LayoutParams) releasedChild.getLayoutParams();
+                lp.gravity = Gravity.NO_GRAVITY;
+                lp.setMargins(releasedChild.getLeft(), releasedChild.getTop(), 0, 0);
+                releasedChild.setLayoutParams(lp);
             }
 
             @Override
             public int clampViewPositionHorizontal(View child, int left, int dx) {
-//                settleView(child, left);
-                dragToUpdate(left + dx, child.getTop());
                 final int leftBound = getPaddingLeft();
                 final int rightBound = getWidth() - getChildView().getWidth();
                 return Math.min(Math.max(left, leftBound), rightBound);
@@ -78,7 +81,6 @@ public class CropLayout extends FrameLayout {
 
             @Override
             public int clampViewPositionVertical(View child, int top, int dy) {
-                dragToUpdate(child.getLeft(), top + dy);
                 final int topBound = getPaddingTop();
                 final int bottomBound = getHeight() - getChildView().getHeight() - getChildView().getPaddingBottom();
                 return Math.min(Math.max(top, topBound), bottomBound);
@@ -87,17 +89,11 @@ public class CropLayout extends FrameLayout {
         });
     }
 
-    private void dragToUpdate(int x, int y) {
-        RectF rectF = shapper.getCornerRects();
-        Log.d(TAG, "touchSlop: " + mTouchSlop + ",x:" + x + ",y:" + y + "," + rectF);
-        //find out touch position within {0,1,2,3}
-
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
+        ensureShapper(x, y);
         if (handleExpand(x, y, event)) {
             //处理 缩放
             return true;
@@ -120,10 +116,10 @@ public class CropLayout extends FrameLayout {
      */
     private int inCorner(float x, float y) {
         RectF rectF = shapper.getCornerRects();
-        rectF.left = shapper.getShapper().getLeft();
-        rectF.top = shapper.getShapper().getTop();
-        rectF.right = shapper.getShapper().getRight();
-        rectF.bottom = shapper.getShapper().getBottom();
+        rectF.left = shapper.getShaper().getLeft();
+        rectF.top = shapper.getShaper().getTop();
+        rectF.right = shapper.getShaper().getRight();
+        rectF.bottom = shapper.getShaper().getBottom();
         //left top
         if ((rectF.left) < x && (rectF.left + mTouchSlop) > x
                 && (rectF.top - mTouchSlop) <= y && (rectF.top + mTouchSlop) > y) {
@@ -188,7 +184,6 @@ public class CropLayout extends FrameLayout {
         return false;
     }
 
-    int l = 0, t = 0, r = 0, b = 0;
 
     private void layoutChild(int currentCorner, float rawX, float rawY) {
         synchronized (this) {
@@ -240,12 +235,40 @@ public class CropLayout extends FrameLayout {
             lp.gravity = Gravity.NO_GRAVITY;
             lp.setMargins(l, t, 0, 0);
             getChildView().layout(l, t, r, b);
+            Log.d(TAG, "getChildView:" + shapper.getId());
             getChildView().requestLayout();
         }
     }
 
     private View getChildView() {
-        return shapper.getShapper();
+        return shapper.getShaper();
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        final int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            ViewGroup v = (ViewGroup) getChildAt(i);
+            FrameLayout.LayoutParams lp = (LayoutParams) v.getLayoutParams();
+            Log.d(TAG, "onLayout:" + v.getTag() + "," + lp.gravity);
+
+        }
+    }
+
+    private void ensureShapper(float x, float y) {
+        final int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            View v = getChildAt(i);
+            int l = v.getLeft();
+            int t = v.getTop();
+            int r = v.getRight();
+            int b = v.getBottom();
+            if (l < x && r > x && t < y && b > y) {
+                shapper = (Shaper) v;
+                break;
+            }
+        }
+        Log.d(TAG, "ensureShapper:" + ((View) shapper).getTag());
+    }
 }

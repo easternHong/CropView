@@ -237,6 +237,9 @@ public class CropLayout extends FrameLayout {
             getChildView().layout(l, t, r, b);
             Log.d(TAG, "getChildView:" + shapper.getId());
             getChildView().requestLayout();
+            if (sizeUpdateListener != null) {
+                sizeUpdateListener.update(this, w, h);
+            }
         }
     }
 
@@ -252,7 +255,6 @@ public class CropLayout extends FrameLayout {
             ViewGroup v = (ViewGroup) getChildAt(i);
             FrameLayout.LayoutParams lp = (LayoutParams) v.getLayoutParams();
             Log.d(TAG, "onLayout:" + v.getTag() + "," + lp.gravity);
-
         }
     }
 
@@ -270,5 +272,15 @@ public class CropLayout extends FrameLayout {
             }
         }
         Log.d(TAG, "ensureShapper:" + ((View) shapper).getTag());
+    }
+
+    public void setSizeUpdateListener(SizeUpdateListener sizeUpdateListener) {
+        this.sizeUpdateListener = sizeUpdateListener;
+    }
+
+    private SizeUpdateListener sizeUpdateListener;
+
+    public interface SizeUpdateListener {
+        void update(CropLayout layout, int w, int h);
     }
 }

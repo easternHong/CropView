@@ -149,6 +149,7 @@ public class CropLayout extends FrameLayout {
         this.canBeExpand = canBeExpand;
     }
 
+
     private boolean handleExpand(float x, float y, MotionEvent ev) {
         final int action = ev.getActionMasked();
         if (action == MotionEvent.ACTION_DOWN) {
@@ -235,12 +236,22 @@ public class CropLayout extends FrameLayout {
             lp.gravity = Gravity.NO_GRAVITY;
             lp.setMargins(l, t, 0, 0);
             getChildView().layout(l, t, r, b);
-            Log.d(TAG, "getChildView:" + shapper.getId());
+            Log.d(TAG, "getChildView:" + ((View) shapper).getTag());
             getChildView().requestLayout();
             if (sizeUpdateListener != null) {
-                sizeUpdateListener.update(this, w, h);
+                sizeUpdateListener.update(shapper, w, h);
             }
         }
+    }
+
+    /**
+     * @param l
+     * @param t
+     * @param r
+     * @param b
+     */
+    private void checkOverlap(int l, int t, int r, int b) {
+
     }
 
     private View getChildView() {
@@ -281,6 +292,6 @@ public class CropLayout extends FrameLayout {
     private SizeUpdateListener sizeUpdateListener;
 
     public interface SizeUpdateListener {
-        void update(CropLayout layout, int w, int h);
+        void update(Shaper layout, int w, int h);
     }
 }

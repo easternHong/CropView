@@ -7,6 +7,7 @@ import android.text.TextDirectionHeuristics;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -37,8 +38,9 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.v_content);
         cropLayout.setSizeUpdateListener(new CropLayout.SizeUpdateListener() {
             @Override
-            public void update(CropLayout layout, int w, int h) {
-                textView.setVisibility((h < 250 || w < 400) ? View.INVISIBLE : View.VISIBLE);
+            public void update(Shaper layout, int w, int h) {
+                Log.d("......", "shapper:" + ((View) layout).getTag());
+                ((ViewGroup) layout).getChildAt(0).setVisibility((h < 250 || w < 400) ? View.INVISIBLE : View.VISIBLE);
             }
         });
     }
